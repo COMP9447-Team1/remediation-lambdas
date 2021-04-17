@@ -1,8 +1,8 @@
 import json
 import boto3
 import urllib3 
-http = urllib3.PoolManager() # not sure not why inside of def - is it executed only once?
 
+http = urllib3.PoolManager() # not sure not why inside of def - is it executed only once?
 client = boto3.client('s3')
 def lambda_handler(event, context):
     # TODO implement
@@ -42,8 +42,6 @@ def lambda_handler(event, context):
                 ExpectedBucketOwner=bucketOwner
             )
             
-            print('yoooo', response)
-        
             # === Slack Notifications part ====
             try: #  try logic to catch errors
                 # URL var is basically the Bot's private key
@@ -70,15 +68,6 @@ def lambda_handler(event, context):
                 print(e)
                 raise
             # ==== Slack END ===
-            print('did it work??', result)
-
-    
-        
-    
-    #val = (response['Rules']['BucketKeyEnabled'])
-    #print(val)
-    
-    print(response)
 
     return {
         'statusCode': 200,
