@@ -55,6 +55,19 @@ def push_To_SNS_Topic(event):
         logger.error('ERROR: Unable to push to SNS Topic: Check [1] SNS Topic ARN is invalid, [2] IAM Role Permissions{0}'.format( str(e) ) )
         logger.error('ERROR: {0}'.format( str(e) ) )
     
+def gen_actions_md(actions, flag_suggestion = True):
+    s = "*Human action required*\n\n"
+    
+    for k in actions:
+        s += "* *{}*, \n".format(k)
+        s += "```\n{}```".format(actions.get(k, "(no known command)"))
+        s += "\n\n"
+        
+    if(flag_suggestion):
+        s += "\u261f Input desired action below"
+        
+    return s
+        
 
 def giveUserOptions():
         # === Slack Notifications part ====
@@ -65,19 +78,22 @@ def giveUserOptions():
               "rudy-guardduty": "https://hooks.slack.com/services/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",
             }
             
+            actions = {
+               "Stop EC2 instance": "@aws invoke StopEC2Instance --region us-east-1",
+               "Block IP address": "@aws invoke EC2BlockIPAddress --region us-east-1",
+               "Ignore": "(do nothing)"
+            }
+            
             # parameters
             channel = "rudy-guardduty"
             url = webhooks[channel]
                 
             # my own var
 
-            md_text = "*" + "Would you like to" + "*" + "\n\n" + "Stop EC2 instance: @aws invoke StopEC2Instance --region us-east-1" +  "*\n\n" + "Block IP: @aws invoke blockIP --region us-east-1" +  "*\n\n" +"Ignore" + "*\n\n" +  "To execute these remediations, please copy and paste the aws commands back into the channel"
-        
-            
-            
-            
+            md_text = gen_actions_md(actions) 
+
             msg = {
-                "channel": "#%s".format(channel),
+                "channel": "#{}".format(channel),
                 "username": "WEBHOOK_USERNAME",
                 "text": md_text,
                 "icon_emoji": ":white_check_mark:"

@@ -133,7 +133,7 @@ def lambda_handler(event, context):
             "VPC: "+noncompliantVPC ) 
         
         msg = {
-            "channel": "#%s".format(channel),
+            "channel": "#{}".format(channel),
             "username": "WEBHOOK_USERNAME",
             "text": md_text,
             "icon_emoji": ":white_check_mark:"

@@ -58,7 +58,7 @@ def lambda_handler(event, context):
                 md_text = "*"+( event.get('detail-type', "Config Rule") + "*\n\n" + result + "\n")
                 
                 msg = {
-                    "channel": "#%s".format(channel),
+                    "channel": "#{}".format(channel),
                     "username": "WEBHOOK_USERNAME",
                     "text": md_text,
                     "icon_emoji": ":white_check_mark:"
