@@ -46,8 +46,8 @@ def lambda_handler(event, context):
             try: #  try logic to catch errors
                 # webhooks dict contains basically the Bot's private keys
                 webhooks =  {
-                  "team1": "https://hooks.slack.com/services/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",
-                  "rudy-guardduty": "https://hooks.slack.com/services/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",
+                    "team1": "https://hooks.slack.com/services/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",
+                    "rudy-guardduty": "https://hooks.slack.com/services/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",
                 }
                 
                 # parameters
