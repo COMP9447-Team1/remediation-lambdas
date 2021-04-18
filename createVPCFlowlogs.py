@@ -116,9 +116,16 @@ def lambda_handler(event, context):
 
     # === Slack Notifications part ====
     try: #  try logic to catch errors
-        # URL var is basically the Bot's private key
-        url = "https://hooks.slack.com/services/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"
+        # webhooks dict contains basically the Bot's private keys
+        webhooks =  {
+          "team1": "https://hooks.slack.com/services/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",
+          "rudy-guardduty": "https://hooks.slack.com/services/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",
+        }
         
+        # parameters
+        channel = "rudy-guardduty"
+        url = webhooks[channel]
+                
         # my own var
         md_text = "*"+( event.get('detail-type', "Config Rule") + "*\n\n" +
             result + "\n\n"
@@ -126,7 +133,7 @@ def lambda_handler(event, context):
             "VPC: "+noncompliantVPC ) 
         
         msg = {
-            "channel": "#team1",
+            "channel": "#{}".format(channel),
             "username": "WEBHOOK_USERNAME",
             "text": md_text,
             "icon_emoji": ":white_check_mark:"
