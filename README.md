@@ -9,6 +9,7 @@ createVPCFlowlogs.py | CIS_2-9_RR | VPC flowlogs and notifications
 **cfn**_encryptS3.py | cfn-s3-bucket-encrypt-S3BucketEncryptedCheck-5A01ILX84QBR | ??? + Slack notifications
 Rudy-GuardDuty-To-Slack.py | Rudy-GuardDuty-To-Slack | Rudy-GuardDuty-To-Slack + Slack Options
 EncryptS3.py | EncryptS3 | Encrypt S3
+EC2_blockIP.py | (to be set) | Block IP lambda
 
 ## Slack Webhooks
 
