@@ -1,4 +1,7 @@
 import boto3, os, sys, json, logging
+
+import re #for IP manipulation
+
 import urllib3 
 http = urllib3.PoolManager() # not sure not why inside of def - is it executed only once?
 
@@ -47,11 +50,10 @@ def push_To_SNS_Topic(event):
             Subject = event['detail']['title']
         )
         logger.info('SUCCESS: Pushed GuardDuty Finding to SNS Topic')
-        
         instanceID = event['detail']['resource']['instanceDetails']['instanceId']
-        
-        giveUserOptions(instanceID)
-        
+        ip = event['detail']['service']['action']['networkConnectionAction']['remoteIpDetails']['ipAddressV4']
+        giveUserOptions(instanceID, ip)
+
         return "Successly pushed to Notification to SNS Topic"
     except KeyError as e:
         logger.error('ERROR: Unable to push to SNS Topic: Check [1] SNS Topic ARN is invalid, [2] IAM Role Permissions{0}'.format( str(e) ) )
@@ -70,8 +72,22 @@ def gen_actions_md(actions, flag_suggestion = True):
         
     return s
         
+def ipaddr_replace_last_dgt(ip, d):
+    pattern = "(\d+)\.(\d+)\.(\d+)\.(\d+)"
 
-def giveUserOptions(instanceID):
+    numbers = re.match(pattern, ip)
+    lst =  list(numbers.groups())
+    lst[-1] = str(d)
+
+    # compile back
+    s = lst[0]
+    for i in lst[1:]:
+        s = s + "." + i
+    
+    return s
+
+
+def giveUserOptions(instanceID, ip):
         # === Slack Notifications part ====
         try: #  try logic to catch errors
             # webhooks dict contains basically the Bot's private keys
@@ -80,9 +96,13 @@ def giveUserOptions(instanceID):
               "rudy-guardduty": "https://hooks.slack.com/services/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",
             }
             
+            ipmod = ipaddr_replace_last_dgt(ip,1) + "/24"
+            print(ipmod)
+            
             actions = {
-               "Stop EC2 instance": "@aws invoke StopEC2Instance --region us-east-1 --payload " +  '{"id" : "' + instanceID + '"}',
-               "Block IP address": "@aws invoke EC2BlockIPAddress --region us-east-1",
+               "Stop EC2 instance": "@aws invoke StopEC2Instance --region us-east-1 --payload " +  '{"id": "' + instanceID + '"}',
+               "Ban IP address": "@aws invoke EC2BlockIPAddress --region us-east-1  --payload " +        '{"id": "' + instanceID + '",\n "ip": "' + ip + '"}',
+               "Ban the entire IP subnet": "@aws invoke EC2BlockIPAddress --region us-east-1  --payload " +  '{"id": "' + instanceID + '",\n "ip": "' + ipmod +'"}',
                "Ignore": "(do nothing)"
             }
             
