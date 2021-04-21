@@ -48,6 +48,7 @@ def gen_iprange(ip_addr, i = 32):
     return buf
 
 def update_security_group(vpcid, ip_addr):
+    result = "Success"
     client = boto3.client('ec2')
     
     # see https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.SecurityGroup.ip_permissions
@@ -118,3 +119,4 @@ def update_security_group(vpcid, ip_addr):
         print(e)
         raise
     # ==== Slack END ===
+    return result

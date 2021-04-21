@@ -101,8 +101,8 @@ def giveUserOptions(instanceID, ip):
             
             actions = {
                "Stop EC2 instance": "@aws invoke StopEC2Instance --region us-east-1 --payload " +  '{"id": "' + instanceID + '"}',
-               "Ban IP address": "@aws invoke EC2BlockIPAddress --region us-east-1  --payload " +        '{"id": "' + instanceID + '",\n "ip": "' + ip + '"}',
-               "Ban the entire IP subnet": "@aws invoke EC2BlockIPAddress --region us-east-1  --payload " +  '{"id": "' + instanceID + '",\n "ip": "' + ipmod +'"}',
+               "Ban IP address": "@aws invoke EC2BlockIPAddress --region us-east-1  --payload " +        '{"id": "' + instanceID + '", ip": "' + ip + '"}',
+               "Ban the entire IP subnet": "@aws invoke EC2BlockIPAddress --region us-east-1  --payload " +  '{"id": "' + instanceID + '", ip": "' + ipmod +'"}',
                "Ignore": "(do nothing)"
             }
             
