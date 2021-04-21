@@ -1,8 +1,10 @@
 import boto3
 import hashlib
 import json
-import urllib2
 
+import urllib3
+# not sure not why inside of def - is it executed only once?
+http = urllib3.PoolManager()
 
 # ID of the security group we want to update
 # SECURITY_GROUP_ID = "sg-XXXX"
@@ -22,13 +24,47 @@ def lambda_handler(event, context):
 
 
 def lambda_handler(event, context):
+    # === Slack Notifications part ====
+    try: #  try logic to catch errors
+        # webhooks dict contains basically the Bot's private keys
+        webhooks =  {
+            "team1": "https://hooks.slack.com/services/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",
+            "rudy-guardduty": "https://hooks.slack.com/services/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",
+        }
+        
+        # parameters
+        channel = "rudy-guardduty"
+        url = webhooks[channel]
+        
+        # my own var
+        md_text = str(event)
+        
+        msg = {
+            "channel": "#{}".format(channel),
+            "username": "WEBHOOK_USERNAME",
+            "text": md_text,
+            "icon_emoji": ":white_check_mark:"
+        }
+        
+        encoded_msg = json.dumps(msg).encode('utf-8')
+        resp = http.request('POST',url, body=encoded_msg)
+        print({
+            "message": md_text, 
+            "status_code": resp.status, 
+            "response": resp.data
+        })
+    except Exception as e:
+        print(e)
+        raise
+    # ==== Slack END ===
+    
     new_ip_address = list(event.values())[0]
     result = update_security_group(new_ip_address)
     return result
     
 def gen_iprange(ip_addr, i = 32):
     if(ip_addr.find("/") == -1): # hash not found
-        # i - Cisco style range (or whatever it's called)
+        # i - Cisco style mark (or whatever it's called)
         #  * 32 means to specify 1 IP address only
         #  * 24 means to specify the entire subnet (e.g. 192.168.10.* )
         #  * 0 means to block the entire IPv4 range ie the internet (lol)
@@ -83,7 +119,7 @@ def update_security_group(new_ip_address):
         url = webhooks[channel]
         
         # my own var
-        md_text = "*\u1F528 Ban successful*\n\n*" + processed_ip + "*has been banned."
+        md_text = "*\u1f528 Ban successful*\n\n*" + processed_ip + "*has been banned."
         
         msg = {
             "channel": "#{}".format(channel),
